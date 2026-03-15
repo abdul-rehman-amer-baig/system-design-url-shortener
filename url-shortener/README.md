@@ -7,4 +7,5 @@ TODO: What's left:
 4. Beautify README.md file
 5. Vibecode front-end 
 6. Time to make it live on render
+7. Associate the live URL in portfolio to showcase
 
