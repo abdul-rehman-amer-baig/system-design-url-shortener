@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.exc import IntegrityError
 from redis.asyncio import Redis
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select
 
 from sqlalchemy.dialects.postgresql import insert
 
@@ -30,37 +29,24 @@ async def create_short_url(
         insert(URL)
         .values(
             short_code=short_code,
-            original_url=payload.originalURL,
+            original_url=str(payload.originalURL),
             user_id=payload.userID,
-            expiration_time=payload.expirationTime,
+            expiration_time=payload.expirationTime.replace(tzinfo=None) if payload.expirationTime else None,
         )
-        .on_conflict_do_nothing(constraint="uq_url_user")
         .returning(URL.short_code)
     )
 
-    result = await db.execute(stmt)
-    await db.commit()
-
-    returned_code = result.scalar_one_or_none()
-
-    # None means conflict happened — fetch the existing one
-    if not returned_code:
-        existing = await db.execute(
-            select(URL).where(
-                URL.original_url == payload.originalURL,
-                URL.user_id == payload.userID,
-            )
+    try:
+        result = await db.execute(stmt)
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Alias '{short_code}' is already taken",
         )
-        url = existing.scalar_one_or_none()
 
-        if not url:
-            # customAlias conflict — someone else has it
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"Alias '{short_code}' is already taken",
-            )
-
-        short_code = url.short_code
+    short_code = result.scalar_one()
 
     return URLCreateResponse(
         shortCode=short_code,

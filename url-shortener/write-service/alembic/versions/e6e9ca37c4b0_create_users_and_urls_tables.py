@@ -42,7 +42,6 @@ def upgrade() -> None:
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("short_code"),
-        sa.UniqueConstraint("original_url", "user_id", name="uq_url_user"),
     )
 
     op.create_index(op.f("ix_urls_user_id"), "urls", ["user_id"], unique=False)

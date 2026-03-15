@@ -9,9 +9,6 @@ if TYPE_CHECKING:
 
 class URL(SQLModel, table=True):
     __tablename__ = "urls"
-    __table_args__ = (
-        UniqueConstraint("original_url", "user_id", name="uq_url_user"),
-    )
 
     short_code: str = Field(primary_key=True, max_length=20)
     original_url: str
