@@ -1,6 +1,6 @@
 TODO: What's left:
 
-
+0. Add api-gateway
 1. Apply ruff formatting to the code
 2. Test expiration time case when key is cached in redis
 3. Simulate load balancer through nginx
