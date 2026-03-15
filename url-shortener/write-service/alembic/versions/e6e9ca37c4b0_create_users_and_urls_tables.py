@@ -34,7 +34,7 @@ def upgrade() -> None:
             "short_code", sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False
         ),
         sa.Column("original_url", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=True),
+        sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("expiration_time", sa.DateTime(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.ForeignKeyConstraint(
@@ -42,6 +42,7 @@ def upgrade() -> None:
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("short_code"),
+        sa.UniqueConstraint("original_url", "user_id", name="uq_url_user"),
     )
 
     op.create_index(op.f("ix_urls_user_id"), "urls", ["user_id"], unique=False)
