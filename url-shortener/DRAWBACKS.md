@@ -34,15 +34,7 @@ Anyone can hit `POST /urls` and create short URLs. The `user_id` field exists in
 
 ---
 
-## 5. Short Codes are Predictable
-
-Sqids generates codes based on an incrementing Redis counter (`1 → abc`, `2 → abd`, etc.). Someone could enumerate all URLs in the system by simply incrementing the short code.
-
-**Fix:** Configure a random salt in Sqids so the output is not sequential, or switch to UUIDs for short code generation.
-
----
-
-## 6. Alembic Migrations are Not Automated
+## 5. Alembic Migrations are Not Automated
 
 Alembic is set up in the write-service but migrations do not run automatically when containers start. This means a fresh deployment requires manual intervention to set up the DB schema.
 

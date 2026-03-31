@@ -7,9 +7,4 @@ _sqids = Sqids(
 
 
 def generate_shortcode(counter: int) -> str:
-    return _sqids.encode([counter])
-
-
-def decode_shortcode(code: str) -> int:
-    numbers = _sqids.decode(code)
-    return numbers[0] if numbers else -1
+    return _sqids.encode([counter]) 
