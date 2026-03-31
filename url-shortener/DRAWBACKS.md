@@ -31,24 +31,3 @@ Read replicas are horizontally scaled, but nginx itself has no redundancy. If ng
 Anyone can hit `POST /urls` and create short URLs. The `user_id` field exists in the DB but nothing enforces that the requester actually owns that user. There is no token validation anywhere.
 
 **Fix:** Add JWT middleware to the write-service. Requests without a valid token should be rejected with `401 Unauthorized` before reaching any business logic.
-
----
-
-## 5. Alembic Migrations are Not Automated
-
-Alembic is set up in the write-service but migrations do not run automatically when containers start. This means a fresh deployment requires manual intervention to set up the DB schema.
-
-**Fix:** Add an `entrypoint.sh` to the write-service that runs `alembic upgrade head` before starting uvicorn:
-
-```bash
-#!/bin/bash
-alembic upgrade head
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Then update the Dockerfile:
-```dockerfile
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-CMD ["./entrypoint.sh"]
-```
