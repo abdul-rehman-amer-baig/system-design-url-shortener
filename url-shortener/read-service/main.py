@@ -14,7 +14,12 @@ async def lifespan(app: FastAPI):
     await close_db()
 
 
-app = FastAPI(title="Read Service", lifespan=lifespan)
+app = FastAPI(
+    title="Read Service",
+    lifespan=lifespan,
+    docs_url="/read/docs",
+    openapi_url="/read/openapi.json",
+)
 
 app.include_router(urls.router)
 

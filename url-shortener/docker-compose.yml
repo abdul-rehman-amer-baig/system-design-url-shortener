@@ -13,5 +13,67 @@ services:
   redis:
     image: redis:7-alpine
     command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
+
+  write-service:
+    build: ./write-service
+    volumes:
+      - ./write-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/urlshortener
+      REDIS_URL: redis://redis:6379
+      BASE_URL: http://localhost:80
+    depends_on:
+      - postgres
+      - redis
+
+  read-service-1:
+    build: ./read-service
+    volumes:
+      - ./read-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/urlshortener
+      REDIS_URL: redis://redis:6379
+      INSTANCE_ID: read-service-1
+    depends_on:
+      - postgres
+      - redis
+
+  read-service-2:
+    build: ./read-service
+    volumes:
+      - ./read-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/urlshortener
+      REDIS_URL: redis://redis:6379
+      INSTANCE_ID: read-service-2
+    depends_on:
+      - postgres
+      - redis
+
+  read-service-3:
+    build: ./read-service
+    volumes:
+      - ./read-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/urlshortener
+      REDIS_URL: redis://redis:6379
+      INSTANCE_ID: read-service-3
+    depends_on:
+      - postgres
+      - redis
+
+  nginx:
+    image: nginx:alpine
     ports:
-      - "6379:6379"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - write-service
+      - read-service-1
+      - read-service-2
+      - read-service-3

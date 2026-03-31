@@ -17,7 +17,9 @@ async def create_user(
 ):
     result = await db.execute(select(User).where(User.name == payload.name))
     if result.scalar_one_or_none():
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="User already exists"
+        )
 
     user = User(name=payload.name)
     db.add(user)

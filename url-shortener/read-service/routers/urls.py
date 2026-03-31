@@ -21,7 +21,7 @@ async def resolve_url(
 
     cached_url = await redis.get(cache_key)
 
-    print ("Cache key:", cache_key, "Cached URL:", cached_url)
+    print("Cache key:", cache_key, "Cached URL:", cached_url)
     if cached_url:
         return URLResolveResponse(
             originalURL=cached_url,
@@ -33,7 +33,7 @@ async def resolve_url(
         "SELECT original_url, expiration_time FROM urls WHERE short_code = $1",
         short_code,
     )
-    print ("Database row:", row)
+    print("Database row:", row)
 
     if not row:
         raise HTTPException(
@@ -44,6 +44,7 @@ async def resolve_url(
     if row["expiration_time"]:
         expiry = row["expiration_time"].replace(tzinfo=timezone.utc)
         if expiry < datetime.now(timezone.utc):
+            await redis.delete(cache_key)
             raise HTTPException(
                 status_code=status.HTTP_410_GONE,
                 detail="Short URL has expired",
