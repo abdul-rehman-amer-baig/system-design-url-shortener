@@ -74,32 +74,6 @@ All requests go through `http://localhost` (nginx on port 80).
 docker compose up --build
 ```
 
-**After code changes** (hot-reload is enabled, so usually not needed):
-```bash
-docker compose up --build
-```
-
-**After changing `docker-compose.yml` only:**
-```bash
-docker compose up
-```
-
-**Run in background:**
-```bash
-docker compose up -d
-```
-
-**View logs:**
-```bash
-docker compose logs -f
-docker compose logs -f read-service-1
-```
-
-**Stop everything:**
-```bash
-docker compose down
-```
-
 ---
 
 ## How It Works
