@@ -106,11 +106,3 @@ redis-server --maxmemory 100mb --maxmemory-policy allkeys-lfu
 
 - **100mb** memory cap
 - **LFU eviction** — least frequently used keys are evicted when memory is full, keeping popular URLs cached longer
-
----
-
-## TODO
-
-- [ ] Build a front-end
-- [ ] Deploy to Render
-- [ ] Link live URL in portfolio
